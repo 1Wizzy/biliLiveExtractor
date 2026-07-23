@@ -7,6 +7,9 @@ const COOKIE_KEY = "bili_cookies";
 const el = (id) => document.getElementById(id);
 const loginBtn = el("loginBtn");
 const logoutBtn = el("logoutBtn");
+const exportBtn = el("exportBtn");
+const importBtn = el("importBtn");
+const importFile = el("importFile");
 const loginStatus = el("loginStatus");
 const qrBox = el("qrBox");
 const qrImg = el("qrImg");
@@ -42,18 +45,129 @@ function clearCookies() {
   refreshLoginState();
 }
 
+// Export the stored cookies as a downloadable JSON file.
+function exportCookies() {
+  const cookies = getCookies();
+  if (!cookies || !Object.keys(cookies).length) {
+    setLoginMessage("No cookies to export", true);
+    return;
+  }
+  const blob = new Blob([JSON.stringify(cookies, null, 2)], {
+    type: "application/json",
+  });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "bili-cookies.json";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+// Import cookies from a user-selected JSON file. Accepts either the object
+// this app exports ({ SESSDATA, ... }) or a bare JSON object of cookie pairs.
+function importCookies(file) {
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    let parsed;
+    try {
+      parsed = JSON.parse(reader.result);
+    } catch {
+      setLoginMessage("Invalid file: not valid JSON", true);
+      return;
+    }
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+      setLoginMessage("Invalid file: expected a JSON object", true);
+      return;
+    }
+    // Keep only string values, and require SESSDATA to be a usable login.
+    const cookies = {};
+    for (const [k, v] of Object.entries(parsed)) {
+      if (typeof v === "string" || typeof v === "number") {
+        cookies[k] = String(v);
+      }
+    }
+    if (!cookies.SESSDATA) {
+      setLoginMessage("Invalid file: missing SESSDATA", true);
+      return;
+    }
+    setCookies(cookies);
+    setLoginMessage("Cookies imported", false);
+  };
+  reader.onerror = () => setLoginMessage("Could not read the file", true);
+  reader.readAsText(file);
+}
+
+// Update the login status line with a transient message.
+function setLoginMessage(text, isError) {
+  loginStatus.textContent = text;
+  loginStatus.className = isError ? "status status-err" : "status status-ok";
+}
+
 function refreshLoginState() {
   const cookies = getCookies();
   if (cookies && cookies.SESSDATA) {
     loginStatus.textContent = "Logged in";
     loginStatus.className = "status status-ok";
     logoutBtn.hidden = false;
+    exportBtn.hidden = false;
     loginBtn.textContent = "Regenerate QR code";
   } else {
     loginStatus.textContent = "Not logged in";
     loginStatus.className = "status";
     logoutBtn.hidden = true;
+    exportBtn.hidden = true;
     loginBtn.textContent = "Generate login QR code";
+  }
+}
+
+// Export the stored cookies as a downloadable JSON file.
+function exportCookies() {
+  const cookies = getCookies();
+  if (!cookies || !Object.keys(cookies).length) {
+    loginStatus.textContent = "No cookies to export";
+    loginStatus.className = "status status-err";
+    return;
+  }
+  const blob = new Blob([JSON.stringify(cookies, null, 2)], {
+    type: "application/json",
+  });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "bili-cookies.json";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+// Import cookies from a user-selected JSON file.
+async function importCookies(file) {
+  if (!file) return;
+  try {
+    const text = await file.text();
+    const parsed = JSON.parse(text);
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+      throw new Error("Expected a JSON object of cookie name/value pairs");
+    }
+    if (!parsed.SESSDATA) {
+      throw new Error("Missing SESSDATA cookie");
+    }
+    // Keep only string values; ignore anything unexpected.
+    const cookies = {};
+    for (const [k, v] of Object.entries(parsed)) {
+      if (typeof v === "string") cookies[k] = v;
+    }
+    localStorage.setItem(COOKIE_KEY, JSON.stringify(cookies));
+    refreshLoginState();
+    loginStatus.textContent = "Cookies imported";
+    loginStatus.className = "status status-ok";
+  } catch (err) {
+    loginStatus.textContent = `Import failed: ${err.message}`;
+    loginStatus.className = "status status-err";
   }
 }
 
@@ -250,6 +364,12 @@ async function extractRoom(evt) {
 
 loginBtn.addEventListener("click", startLogin);
 logoutBtn.addEventListener("click", clearCookies);
+exportBtn.addEventListener("click", exportCookies);
+importBtn.addEventListener("click", () => importFile.click());
+importFile.addEventListener("change", () => {
+  importCookies(importFile.files[0]);
+  importFile.value = ""; // allow re-importing the same file
+});
 roomForm.addEventListener("submit", extractRoom);
 showAll.addEventListener("change", () => {
   allStreams.hidden = !showAll.checked;

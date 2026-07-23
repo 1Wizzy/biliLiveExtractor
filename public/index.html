@@ -19,12 +19,17 @@
         <h2>1. Log in (optional)</h2>
         <p class="hint">
           Login unlocks higher qualities (Original / 4K / Dolby). Your cookies
-          stay in this browser and are only forwarded to Bilibili.
+          stay in this browser and are only forwarded to Bilibili. You can
+          export them to a JSON file for backup, or import a saved file to
+          restore a session without scanning again.
         </p>
         <div class="login-row">
           <button id="loginBtn" class="btn">Generate login QR code</button>
           <span id="loginStatus" class="status"></span>
+          <button id="exportBtn" class="btn btn-ghost" hidden>Export cookies</button>
+          <button id="importBtn" class="btn btn-ghost">Import cookies</button>
           <button id="logoutBtn" class="btn btn-ghost" hidden>Log out</button>
+          <input id="importFile" type="file" accept="application/json,.json" hidden />
         </div>
         <div id="qrBox" class="qr-box" hidden>
           <img id="qrImg" alt="Login QR code" />
