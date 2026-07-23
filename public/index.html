@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bilibili Live Stream Extractor</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="app">
+      <header class="hero">
+        <h1>Bilibili Live Stream Extractor</h1>
+        <p class="subtitle">
+          Extract playable stream URLs from any Bilibili live room.
+        </p>
+      </header>
+
+      <section class="card">
+        <h2>1. Log in (optional)</h2>
+        <p class="hint">
+          Login unlocks higher qualities (Original / 4K / Dolby). Your cookies
+          stay in this browser and are only forwarded to Bilibili.
+        </p>
+        <div class="login-row">
+          <button id="loginBtn" class="btn">Generate login QR code</button>
+          <span id="loginStatus" class="status"></span>
+          <button id="logoutBtn" class="btn btn-ghost" hidden>Log out</button>
+        </div>
+        <div id="qrBox" class="qr-box" hidden>
+          <img id="qrImg" alt="Login QR code" />
+          <p class="hint">Scan with the Bilibili mobile app.</p>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>2. Enter a live room</h2>
+        <form id="roomForm" class="room-form">
+          <input
+            id="roomInput"
+            type="text"
+            placeholder="live.bilibili.com/12345, b23.tv/XXXX, or 12345"
+            autocomplete="off"
+            required
+          />
+          <button type="submit" class="btn">Extract</button>
+        </form>
+        <p id="roomError" class="error" hidden></p>
+      </section>
+
+      <section id="results" class="card" hidden>
+        <div id="roomMeta" class="room-meta"></div>
+        <div id="bestBox" class="best-box" hidden>
+          <h3>Best quality</h3>
+          <div class="stream-url" id="bestUrl"></div>
+        </div>
+        <div class="all-toggle">
+          <label>
+            <input type="checkbox" id="showAll" />
+            Show all qualities
+          </label>
+        </div>
+        <div id="allStreams" class="all-streams" hidden></div>
+      </section>
+
+      <footer class="footer">
+        <p class="hint">
+          For personal use. Stream URLs are time-limited and issued by Bilibili.
+        </p>
+      </footer>
+    </main>
+    <script src="/app.js"></script>
+  </body>
+</html>

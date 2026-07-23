@@ -1,0 +1,11 @@
+{
+  "name": "bili-live-extractor",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Extract playable stream URLs from Bilibili live rooms. Static frontend + Vercel serverless proxy.",
+  "scripts": {
+    "dev": "vercel dev",
+    "deploy": "vercel deploy --prod"
+  },
+  "license": "MIT"
+}
