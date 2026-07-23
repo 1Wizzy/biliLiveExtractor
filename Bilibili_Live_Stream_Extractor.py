@@ -28,7 +28,7 @@ QUALITY_MAP = {
     20000: "4K",
     10000: "Original",
     400: "Blu-ray",
-    250: "Ultra HD",
+    250: "Super HD",
     150: "HD",
     80: "Smooth",
 }
@@ -39,6 +39,19 @@ QUALITY_PRIORITY = [30000, 20000, 10000, 400, 250, 150, 80]
 
 class BilibiliError(Exception):
     """Raised when a Bilibili API call fails."""
+
+
+def _stream_identity(url):
+    """Return a CDN-independent identity for a stream URL.
+
+    The same logical stream is served from many CDN hosts with different query
+    signatures; the path's final segment (e.g. ``live_50329118_9516950_2500.flv``)
+    is stable, so it is used to de-duplicate streams across requests.
+    """
+    if not url:
+        return url
+    path = url.split("?", 1)[0]
+    return path.rsplit("/", 1)[-1] or path
 
 
 class BilibiliQRCodeLogin:
@@ -176,8 +189,17 @@ class BilibiliLiveStreamExtractor:
         raise BilibiliError(f"Failed to fetch room info: {data.get('message', data)}")
 
     def get_all_stream_urls(self, room_id, max_workers=4):
-        """Fetch stream URLs for every quality concurrently."""
+        """Fetch stream URLs for every quality concurrently.
+
+        Bilibili often downgrades the response: requesting a higher qn than the
+        account/room allows (e.g. any qn without login) returns a lower-quality
+        stream with its real level in ``current_qn``. Streams are therefore
+        grouped by the *actual* ``current_qn`` returned, not by the requested
+        qn, and identical streams returned for several requests are de-duplicated
+        so the same stream is never labelled as multiple qualities.
+        """
         all_streams = {}
+        seen = set()
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
             future_to_qn = {
                 executor.submit(self.get_play_url, room_id, qn): qn
@@ -190,11 +212,25 @@ class BilibiliLiveStreamExtractor:
                 except BilibiliError as exc:
                     print(f"Failed to fetch {QUALITY_MAP[qn]} stream: {exc}")
                     continue
-                if streams:
-                    all_streams[qn] = {
-                        "quality_name": QUALITY_MAP[qn],
-                        "streams": streams,
-                    }
+                if not streams:
+                    continue
+                for stream_key, entries in streams.items():
+                    for entry in entries:
+                        actual_qn = entry["current_qn"]
+                        dedup_key = (actual_qn, stream_key, _stream_identity(entry["url"]))
+                        if dedup_key in seen:
+                            continue
+                        seen.add(dedup_key)
+                        bucket = all_streams.setdefault(
+                            actual_qn,
+                            {
+                                "quality_name": QUALITY_MAP.get(
+                                    actual_qn, f"Unknown({actual_qn})"
+                                ),
+                                "streams": {},
+                            },
+                        )
+                        bucket["streams"].setdefault(stream_key, []).append(entry)
         return all_streams
 
     def get_play_url(self, room_id, qn=10000):

@@ -7,6 +7,7 @@ const {
   baseHeaders,
   fetchJson,
   resolveRoomId,
+  streamIdentity,
   parseStreams,
   getBestStream,
   sendJson,
@@ -65,18 +66,34 @@ module.exports = async (req, res) => {
       QUALITY_PRIORITY.map((qn) => getPlayUrl(roomId, qn, headers))
     );
 
+    // Bilibili often downgrades: requesting a higher qn than the account/room
+    // allows returns a lower-quality stream with its real level in current_qn.
+    // Group by the actual current_qn returned (not the requested qn), and
+    // de-duplicate identical streams so one stream is never labelled as
+    // several qualities.
     const allStreams = {};
-    results.forEach((result, i) => {
-      const qn = QUALITY_PRIORITY[i];
-      if (result.status === "fulfilled" && result.value) {
-        if (Object.keys(result.value).length) {
-          allStreams[qn] = {
-            quality_name: QUALITY_MAP[qn],
-            streams: result.value,
-          };
+    const seen = new Set();
+    for (const result of results) {
+      if (result.status !== "fulfilled" || !result.value) continue;
+      for (const [streamKey, entries] of Object.entries(result.value)) {
+        for (const entry of entries) {
+          const actualQn = entry.current_qn;
+          const dedupKey = `${actualQn}|${streamKey}|${streamIdentity(entry.url)}`;
+          if (seen.has(dedupKey)) continue;
+          seen.add(dedupKey);
+          if (!allStreams[actualQn]) {
+            allStreams[actualQn] = {
+              quality_name: QUALITY_MAP[actualQn] || `Unknown(${actualQn})`,
+              streams: {},
+            };
+          }
+          if (!allStreams[actualQn].streams[streamKey]) {
+            allStreams[actualQn].streams[streamKey] = [];
+          }
+          allStreams[actualQn].streams[streamKey].push(entry);
         }
       }
-    });
+    }
 
     if (!Object.keys(allStreams).length) {
       return sendJson(res, 200, { room_id: roomId, all_streams: {}, best: null });

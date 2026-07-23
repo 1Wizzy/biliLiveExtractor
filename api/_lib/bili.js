@@ -11,7 +11,7 @@ const QUALITY_MAP = {
   20000: "4K",
   10000: "Original",
   400: "Blu-ray",
-  250: "Ultra HD",
+  250: "Super HD",
   150: "HD",
   80: "Smooth",
 };
@@ -40,6 +40,17 @@ async function fetchJson(url, { headers, timeout = 10000 } = {}) {
   } finally {
     clearTimeout(timer);
   }
+}
+
+// Return a CDN-independent identity for a stream URL. The same logical stream
+// is served from many CDN hosts with different query signatures; the path's
+// final segment (e.g. live_50329118_9516950_2500.flv) is stable, so it is used
+// to de-duplicate streams returned across multiple qn requests.
+function streamIdentity(url) {
+  if (!url) return url;
+  const path = String(url).split("?", 1)[0];
+  const parts = path.split("/");
+  return parts[parts.length - 1] || path;
 }
 
 // Extract a room id from a live room URL or a bare number.
@@ -148,6 +159,7 @@ module.exports = {
   QUALITY_PRIORITY,
   baseHeaders,
   fetchJson,
+  streamIdentity,
   extractRoomId,
   resolveShortUrl,
   resolveRoomId,
