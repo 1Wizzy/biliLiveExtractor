@@ -3,51 +3,59 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Bilibili Live Stream Extractor</title>
+    <title data-i18n="page.title">Bilibili Live Stream Extractor</title>
     <link rel="stylesheet" href="/styles.css" />
   </head>
   <body>
     <main class="app">
       <header class="hero">
-        <h1>Bilibili Live Stream Extractor</h1>
-        <p class="subtitle">
+        <div class="lang-selector">
+          <select id="langSelect" aria-label="Language selector">
+            <option value="en">English</option>
+            <option value="zh-cn">简体中文</option>
+            <option value="zh-hk">繁體中文</option>
+          </select>
+        </div>
+        <h1 data-i18n="header.title">Bilibili Live Stream Extractor</h1>
+        <p class="subtitle" data-i18n="header.subtitle">
           Extract playable stream URLs from any Bilibili live room.
         </p>
       </header>
 
       <section class="card">
-        <h2>1. Log in (optional)</h2>
-        <p class="hint">
+        <h2 data-i18n="login.title">1. Log in (optional)</h2>
+        <p class="hint" data-i18n="login.hint">
           Login unlocks higher qualities (Original / 4K / Dolby). Your cookies
           stay in this browser and are only forwarded to Bilibili. You can
           export them to a JSON file for backup, or import a saved file to
           restore a session without scanning again.
         </p>
         <div class="login-row">
-          <button id="loginBtn" class="btn">Generate login QR code</button>
+          <button id="loginBtn" class="btn" data-i18n="login.btn.generate">Generate login QR code</button>
           <span id="loginStatus" class="status"></span>
-          <button id="exportBtn" class="btn btn-ghost" hidden>Export cookies</button>
-          <button id="importBtn" class="btn btn-ghost">Import cookies</button>
-          <button id="logoutBtn" class="btn btn-ghost" hidden>Log out</button>
+          <button id="exportBtn" class="btn btn-ghost" hidden data-i18n="login.btn.export">Export cookies</button>
+          <button id="importBtn" class="btn btn-ghost" data-i18n="login.btn.import">Import cookies</button>
+          <button id="logoutBtn" class="btn btn-ghost" hidden data-i18n="login.btn.logout">Log out</button>
           <input id="importFile" type="file" accept="application/json,.json" hidden />
         </div>
         <div id="qrBox" class="qr-box" hidden>
-          <img id="qrImg" alt="Login QR code" />
-          <p class="hint">Scan with the Bilibili mobile app.</p>
+          <img id="qrImg" data-i18n-alt="login.qr.alt" alt="Login QR code" />
+          <p class="hint" data-i18n="login.qr.hint">Scan with the Bilibili mobile app.</p>
         </div>
       </section>
 
       <section class="card">
-        <h2>2. Enter a live room</h2>
+        <h2 data-i18n="room.title">2. Enter a live room</h2>
         <form id="roomForm" class="room-form">
           <input
             id="roomInput"
             type="text"
+            data-i18n-placeholder="room.input.placeholder"
             placeholder="live.bilibili.com/12345, b23.tv/XXXX, or 12345"
             autocomplete="off"
             required
           />
-          <button type="submit" class="btn">Extract</button>
+          <button type="submit" class="btn" data-i18n="room.btn.extract">Extract</button>
         </form>
         <p id="roomError" class="error" hidden></p>
       </section>
@@ -55,33 +63,38 @@
       <section id="results" class="card" hidden>
         <div id="roomMeta" class="room-meta"></div>
         <div id="bestBox" class="best-box" hidden>
-          <h3>Best quality</h3>
+          <h3 data-i18n="results.best.title">Best quality</h3>
           <div class="stream-url" id="bestUrl"></div>
         </div>
         <div class="all-toggle">
           <label>
             <input type="checkbox" id="showAll" />
-            Show all qualities
+            <span data-i18n="results.showAll">Show all qualities</span>
           </label>
         </div>
         <div id="allStreams" class="all-streams" hidden></div>
       </section>
 
       <footer class="footer">
-        <p class="hint">
+        <p class="hint" data-i18n="footer.disclaimer">
           For personal use. Stream URLs are time-limited and issued by Bilibili.
         </p>
         <p class="hint">
-          Open source on
+          <span data-i18n="footer.openSource">Open source on</span>
           <a
             href="https://github.com/1Wizzy/biliLiveExtractor"
             target="_blank"
             rel="noopener noreferrer"
+            data-i18n="footer.github"
             >GitHub</a
-          >. Stars and issues are welcome.
+          ><span data-i18n="footer.welcome">. Stars and issues are welcome.</span>
         </p>
       </footer>
     </main>
+    <script src="/i18n.js"></script>
+    <script src="/locales/en.js"></script>
+    <script src="/locales/zh-cn.js"></script>
+    <script src="/locales/zh-hk.js"></script>
     <script src="/app.js"></script>
   </body>
 </html>

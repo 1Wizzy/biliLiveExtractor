@@ -22,6 +22,7 @@ const bestBox = el("bestBox");
 const bestUrl = el("bestUrl");
 const showAll = el("showAll");
 const allStreams = el("allStreams");
+const langSelect = el("langSelect");
 
 let pollTimer = null;
 
@@ -109,17 +110,17 @@ function setLoginMessage(text, isError) {
 function refreshLoginState() {
   const cookies = getCookies();
   if (cookies && cookies.SESSDATA) {
-    loginStatus.textContent = "Logged in";
+    loginStatus.textContent = i18n.t('login.status.loggedIn');
     loginStatus.className = "status status-ok";
     logoutBtn.hidden = false;
     exportBtn.hidden = false;
-    loginBtn.textContent = "Regenerate QR code";
+    loginBtn.textContent = i18n.t('login.btn.regenerate');
   } else {
-    loginStatus.textContent = "Not logged in";
+    loginStatus.textContent = i18n.t('login.status.notLoggedIn');
     loginStatus.className = "status";
     logoutBtn.hidden = true;
     exportBtn.hidden = true;
-    loginBtn.textContent = "Generate login QR code";
+    loginBtn.textContent = i18n.t('login.btn.generate');
   }
 }
 
@@ -127,7 +128,7 @@ function refreshLoginState() {
 function exportCookies() {
   const cookies = getCookies();
   if (!cookies || !Object.keys(cookies).length) {
-    loginStatus.textContent = "No cookies to export";
+    loginStatus.textContent = i18n.t('login.status.noCookies');
     loginStatus.className = "status status-err";
     return;
   }
@@ -151,10 +152,10 @@ async function importCookies(file) {
     const text = await file.text();
     const parsed = JSON.parse(text);
     if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
-      throw new Error("Expected a JSON object of cookie name/value pairs");
+      throw new Error(i18n.t('login.import.invalidObject'));
     }
     if (!parsed.SESSDATA) {
-      throw new Error("Missing SESSDATA cookie");
+      throw new Error(i18n.t('login.import.noSESSDATA'));
     }
     // Keep only string values; ignore anything unexpected.
     const cookies = {};
@@ -163,10 +164,10 @@ async function importCookies(file) {
     }
     localStorage.setItem(COOKIE_KEY, JSON.stringify(cookies));
     refreshLoginState();
-    loginStatus.textContent = "Cookies imported";
+    loginStatus.textContent = i18n.t('login.status.imported');
     loginStatus.className = "status status-ok";
   } catch (err) {
-    loginStatus.textContent = `Import failed: ${err.message}`;
+    loginStatus.textContent = i18n.t('login.import.failed', { error: err.message });
     loginStatus.className = "status status-err";
   }
 }
@@ -181,14 +182,14 @@ function renderQr(url) {
 async function startLogin() {
   stopPolling();
   loginBtn.disabled = true;
-  loginStatus.textContent = "Generating QR code...";
+  loginStatus.textContent = i18n.t('login.status.generating');
   loginStatus.className = "status";
   try {
     const resp = await fetch("/api/qrcode/generate");
     const data = await resp.json();
     if (!resp.ok) throw new Error(data.error || "Failed to generate QR code");
     renderQr(data.url);
-    loginStatus.textContent = "Scan the QR code with the Bilibili app";
+    loginStatus.textContent = i18n.t('login.status.scanQR');
     pollLogin(data.qrcode_key);
   } catch (err) {
     loginStatus.textContent = err.message;
@@ -210,7 +211,7 @@ function pollLogin(qrcodeKey) {
   pollTimer = setInterval(async () => {
     if (Date.now() > deadline) {
       stopPolling();
-      loginStatus.textContent = "Login timed out, please try again";
+      loginStatus.textContent = i18n.t('login.status.timeout');
       loginStatus.className = "status status-err";
       return;
     }
@@ -223,14 +224,14 @@ function pollLogin(qrcodeKey) {
         stopPolling();
         qrBox.hidden = true;
         setCookies(data.cookies);
-        loginStatus.textContent = "Login successful!";
+        loginStatus.textContent = i18n.t('login.status.success');
         loginStatus.className = "status status-ok";
       } else if (data.code === 86038) {
         stopPolling();
-        loginStatus.textContent = "QR code expired, please regenerate";
+        loginStatus.textContent = i18n.t('login.status.expired');
         loginStatus.className = "status status-err";
       } else if (data.code === 86090) {
-        loginStatus.textContent = "Scanned, waiting for confirmation...";
+        loginStatus.textContent = i18n.t('login.status.scanned');
       }
     } catch {
       // Transient error; keep polling until the deadline.
@@ -252,14 +253,14 @@ function copyable(url) {
   code.textContent = url;
   const btn = document.createElement("button");
   btn.className = "btn btn-small";
-  btn.textContent = "Copy";
+  btn.textContent = i18n.t('results.copy');
   btn.addEventListener("click", async () => {
     try {
       await navigator.clipboard.writeText(url);
-      btn.textContent = "Copied";
-      setTimeout(() => (btn.textContent = "Copy"), 1500);
+      btn.textContent = i18n.t('results.copied');
+      setTimeout(() => (btn.textContent = i18n.t('results.copy')), 1500);
     } catch {
-      btn.textContent = "Failed";
+      btn.textContent = i18n.t('results.copyFailed');
     }
   });
   wrap.append(code, btn);
@@ -301,7 +302,7 @@ async function extractRoom(evt) {
 
   const submitBtn = roomForm.querySelector("button");
   submitBtn.disabled = true;
-  submitBtn.textContent = "Extracting...";
+  submitBtn.textContent = i18n.t('room.btn.extracting');
 
   const headers = {};
   const cookies = getCookies();
@@ -310,7 +311,7 @@ async function extractRoom(evt) {
   try {
     const roomResp = await fetch(`/api/room?input=${encodeURIComponent(input)}`);
     const room = await roomResp.json();
-    if (!roomResp.ok) throw new Error(room.error || "Failed to fetch room info");
+    if (!roomResp.ok) throw new Error(room.error || i18n.t('room.error.failed'));
 
     roomMeta.innerHTML = "";
     const title = document.createElement("div");
@@ -318,9 +319,12 @@ async function extractRoom(evt) {
     title.textContent = room.title;
     const meta = document.createElement("div");
     meta.className = "room-sub";
-    meta.textContent = `Room ${room.room_id} · Anchor: ${room.anchor} · ${
-      room.is_live ? "Live now" : "Offline"
-    }`;
+    const status = room.is_live ? i18n.t('results.room.liveNow') : i18n.t('results.room.offline');
+    meta.textContent = i18n.t('results.room.meta', {
+      roomId: room.room_id,
+      anchor: room.anchor,
+      status: status
+    });
     roomMeta.append(title, meta);
     results.hidden = false;
 
@@ -337,7 +341,7 @@ async function extractRoom(evt) {
       { headers }
     );
     const streams = await streamResp.json();
-    if (!streamResp.ok) throw new Error(streams.error || "Failed to fetch streams");
+    if (!streamResp.ok) throw new Error(streams.error || i18n.t('room.error.streamsFailed'));
 
     if (streams.best) {
       bestUrl.innerHTML = "";
@@ -358,7 +362,7 @@ async function extractRoom(evt) {
     roomError.hidden = false;
   } finally {
     submitBtn.disabled = false;
-    submitBtn.textContent = "Extract";
+    submitBtn.textContent = i18n.t('room.btn.extract');
   }
 }
 
@@ -375,4 +379,13 @@ showAll.addEventListener("change", () => {
   allStreams.hidden = !showAll.checked;
 });
 
+// Language selector
+langSelect.value = i18n.getLocale();
+langSelect.addEventListener("change", () => {
+  i18n.setLocale(langSelect.value);
+  refreshLoginState();
+});
+
+// Initialize i18n and update page
+i18n.updatePage();
 refreshLoginState();

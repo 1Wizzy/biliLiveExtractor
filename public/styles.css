@@ -33,6 +33,33 @@ body {
 .hero {
   text-align: center;
   margin-bottom: 28px;
+  position: relative;
+}
+
+.lang-selector {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.lang-selector select {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  padding: 6px 10px;
+  color: var(--text);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+
+.lang-selector select:hover {
+  border-color: var(--accent);
+}
+
+.lang-selector select:focus {
+  outline: none;
+  border-color: var(--accent);
 }
 
 .hero h1 {
