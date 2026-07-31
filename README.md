@@ -5,6 +5,7 @@
 [![License](https://img.shields.io/github/license/1Wizzy/biliLiveExtractor?style=flat-square)](./LICENSE)
 
 **Live Instances:**
+
 - 🌍 [bili-live-extractor.wizzyang.qzz.io](https://bili-live-extractor.wizzyang.qzz.io) (Accelerated by Cloudflare)
 - 🚀 [bili-live-extractor.vercel.app](https://bili-live-extractor.vercel.app) (Hosted by Vercel)
 
@@ -80,8 +81,6 @@ python Bilibili_Live_Stream_Extractor.py 12345 --allstream
 - No cookie persistence is performed on the server.
 
 ## Star History
-
-## 📈 Star History
 
 <p align="center">
   <a href="https://star-history.com/#1Wizzy/biliLiveExtractor&Date">
