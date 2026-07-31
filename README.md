@@ -1,8 +1,12 @@
 # Bilibili Live Stream Extractor
 
-[![GitHub stars](https://img.shields.io/github/stars/1Wizzy/biliLiveExtractor?style=for-the-badge)](https://github.com/1Wizzy/biliLiveExtractor/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/1Wizzy/biliLiveExtractor?style=for-the-badge)](https://github.com/1Wizzy/biliLiveExtractor/network/members)
-[![License](https://img.shields.io/github/license/1Wizzy/biliLiveExtractor?style=for-the-badge)](./LICENSE)
+[![GitHub stars](https://img.shields.io/github/stars/1Wizzy/biliLiveExtractor?style=flat-square)](https://github.com/1Wizzy/biliLiveExtractor/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/1Wizzy/biliLiveExtractor?style=flat-square)](https://github.com/1Wizzy/biliLiveExtractor/network/members)
+[![License](https://img.shields.io/github/license/1Wizzy/biliLiveExtractor?style=flat-square)](./LICENSE)
+
+**Live Instances:**
+- 🌍 [bili-live-extractor.wizzyang.qzz.io](https://bili-live-extractor.wizzyang.qzz.io) (Accelerated by Cloudflare)
+- 🚀 [bili-live-extractor.vercel.app](https://bili-live-extractor.vercel.app) (Hosted by Vercel)
 
 Extract playable stream URLs from Bilibili live rooms with:
 
@@ -77,7 +81,7 @@ python Bilibili_Live_Stream_Extractor.py 12345 --allstream
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=1Wizzy/biliLiveExtractor&type=Date)](https://star-history.com/#1Wizzy/biliLiveExtractor&Date)
+[![Star History Chart](https://starchart.cc/1Wizzy/biliLiveExtractor.svg?variant=adaptive)](https://starchart.cc/1Wizzy/biliLiveExtractor)
 
 ## Notes
 
