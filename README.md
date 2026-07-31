@@ -82,7 +82,17 @@ python Bilibili_Live_Stream_Extractor.py 12345 --allstream
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/chart?repos=1Wizzy/biliLiveExtractor&type=date&legend=bottom-right&sealed_token=mnrmWv-BJkS7fkxZYCJUm8rAgiGr5uVNGFXkWk_1slzK9jKjMA6Euo5GLi37HGsid83VrX14kOZsL87x7Ps0ejkKgj27fkQYlig47FR5gNLR37o_oDIabA)](https://www.star-history.com/?repos=1Wizzy%2FbiliLiveExtractor&type=date&legend=bottom-right)
+<p align="center">
+<a href="https://www.star-history.com/?type=date&repos=1Wizzy%2FbiliLiveExtractor">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=1Wizzy/biliLiveExtractor&type=date&theme=dark&legend=top-left&sealed_token=cHUpIS9962kdzMWwxxfFE_ya3eijj6MOg3XMREOHoTxxJgrVmHryCRvCZdoeMR3cMJP7hqxa_1SBJVfNQ8gF4hKs3KTkVZZTIKsFowz8G_dNV0cdNzgLig" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=1Wizzy/biliLiveExtractor&type=date&legend=top-left&sealed_token=cHUpIS9962kdzMWwxxfFE_ya3eijj6MOg3XMREOHoTxxJgrVmHryCRvCZdoeMR3cMJP7hqxa_1SBJVfNQ8gF4hKs3KTkVZZTIKsFowz8G_dNV0cdNzgLig" />
+   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=1Wizzy/biliLiveExtractor&type=date&legend=top-left&sealed_token=cHUpIS9962kdzMWwxxfFE_ya3eijj6MOg3XMREOHoTxxJgrVmHryCRvCZdoeMR3cMJP7hqxa_1SBJVfNQ8gF4hKs3KTkVZZTIKsFowz8G_dNV0cdNzgLig" />
+ </picture>
+</a>
+</p>
+
+
 
 ## Notes
 
