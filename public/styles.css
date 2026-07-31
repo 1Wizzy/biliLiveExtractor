@@ -33,33 +33,84 @@ body {
 .hero {
   text-align: center;
   margin-bottom: 28px;
-  position: relative;
+}
+
+.lang-bar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 12px;
 }
 
 .lang-selector {
-  position: absolute;
-  top: 0;
-  right: 0;
+  position: relative;
 }
 
-.lang-selector select {
+.lang-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   background: var(--card);
   border: 1px solid var(--card-border);
   border-radius: 8px;
-  padding: 6px 10px;
+  padding: 6px 12px;
   color: var(--text);
   font-size: 0.85rem;
+  font-family: inherit;
   cursor: pointer;
   transition: border-color 0.15s ease;
 }
 
-.lang-selector select:hover {
+.lang-btn:hover,
+.lang-btn:focus-visible {
+  outline: none;
   border-color: var(--accent);
 }
 
-.lang-selector select:focus {
-  outline: none;
-  border-color: var(--accent);
+.lang-caret {
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 5px solid var(--muted);
+  transition: transform 0.15s ease;
+}
+
+.lang-selector.open .lang-caret {
+  transform: rotate(180deg);
+}
+
+.lang-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  min-width: 100%;
+  margin: 0;
+  padding: 4px;
+  list-style: none;
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  z-index: 20;
+}
+
+.lang-option {
+  padding: 8px 14px;
+  border-radius: 6px;
+  color: var(--text);
+  font-size: 0.85rem;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.12s ease;
+}
+
+.lang-option:hover {
+  background: #20242c;
+}
+
+.lang-option[aria-selected="true"] {
+  color: var(--accent);
+  font-weight: 600;
 }
 
 .hero h1 {

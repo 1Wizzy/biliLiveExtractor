@@ -22,7 +22,10 @@ const bestBox = el("bestBox");
 const bestUrl = el("bestUrl");
 const showAll = el("showAll");
 const allStreams = el("allStreams");
-const langSelect = el("langSelect");
+const langSelector = el("langSelector");
+const langBtn = el("langBtn");
+const langCurrent = el("langCurrent");
+const langMenu = el("langMenu");
 
 let pollTimer = null;
 
@@ -318,12 +321,72 @@ showAll.addEventListener("change", () => {
   allStreams.hidden = !showAll.checked;
 });
 
-// Language selector
-langSelect.value = i18n.getLocale();
-langSelect.addEventListener("change", () => {
-  i18n.setLocale(langSelect.value);
+// Custom language selector dropdown
+const langOptions = {
+  en: "English",
+  "zh-cn": "简体中文",
+  "zh-hk": "繁體中文",
+};
+
+function setLanguage(locale) {
+  i18n.setLocale(locale);
+  langCurrent.textContent = langOptions[locale] || locale;
+
+  // Update aria-selected on options
+  langMenu.querySelectorAll(".lang-option").forEach((opt) => {
+    const isSelected = opt.getAttribute("data-value") === locale;
+    opt.setAttribute("aria-selected", isSelected ? "true" : "false");
+  });
+
   refreshLoginState();
+}
+
+function toggleLangMenu() {
+  const isOpen = langSelector.classList.toggle("open");
+  langMenu.hidden = !isOpen;
+  langBtn.setAttribute("aria-expanded", isOpen ? "true" : "false");
+}
+
+function closeLangMenu() {
+  langSelector.classList.remove("open");
+  langMenu.hidden = true;
+  langBtn.setAttribute("aria-expanded", "false");
+}
+
+langBtn.addEventListener("click", (e) => {
+  e.stopPropagation();
+  toggleLangMenu();
 });
+
+langMenu.addEventListener("click", (e) => {
+  const option = e.target.closest(".lang-option");
+  if (!option) return;
+
+  const locale = option.getAttribute("data-value");
+  if (locale) {
+    setLanguage(locale);
+    closeLangMenu();
+  }
+});
+
+// Close dropdown when clicking outside
+document.addEventListener("click", () => {
+  if (!langSelector.classList.contains("open")) return;
+  closeLangMenu();
+});
+
+// Keyboard navigation for accessibility
+langBtn.addEventListener("keydown", (e) => {
+  if (e.key === "Enter" || e.key === " ") {
+    e.preventDefault();
+    toggleLangMenu();
+  } else if (e.key === "Escape") {
+    closeLangMenu();
+  }
+});
+
+// Initialize language selector with current locale
+setLanguage(i18n.getLocale());
 
 // Initialize i18n and update page
 i18n.updatePage();
