@@ -81,7 +81,17 @@ python Bilibili_Live_Stream_Extractor.py 12345 --allstream
 
 ## Star History
 
-[![Star History Chart](https://starchart.cc/1Wizzy/biliLiveExtractor.svg?variant=adaptive)](https://starchart.cc/1Wizzy/biliLiveExtractor)
+## 📈 Star History
+
+<p align="center">
+  <a href="https://star-history.com/#1Wizzy/biliLiveExtractor&Date">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=1Wizzy/biliLiveExtractor&type=Date&theme=dark" />
+      <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=1Wizzy/biliLiveExtractor&type=Date" />
+      <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=1Wizzy/biliLiveExtractor&type=Date" />
+    </picture>
+  </a>
+</p>
 
 ## Notes
 
