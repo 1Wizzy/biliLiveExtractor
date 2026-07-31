@@ -46,67 +46,6 @@ function clearCookies() {
   refreshLoginState();
 }
 
-// Export the stored cookies as a downloadable JSON file.
-function exportCookies() {
-  const cookies = getCookies();
-  if (!cookies || !Object.keys(cookies).length) {
-    setLoginMessage("No cookies to export", true);
-    return;
-  }
-  const blob = new Blob([JSON.stringify(cookies, null, 2)], {
-    type: "application/json",
-  });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "bili-cookies.json";
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(url);
-}
-
-// Import cookies from a user-selected JSON file. Accepts either the object
-// this app exports ({ SESSDATA, ... }) or a bare JSON object of cookie pairs.
-function importCookies(file) {
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = () => {
-    let parsed;
-    try {
-      parsed = JSON.parse(reader.result);
-    } catch {
-      setLoginMessage("Invalid file: not valid JSON", true);
-      return;
-    }
-    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
-      setLoginMessage("Invalid file: expected a JSON object", true);
-      return;
-    }
-    // Keep only string values, and require SESSDATA to be a usable login.
-    const cookies = {};
-    for (const [k, v] of Object.entries(parsed)) {
-      if (typeof v === "string" || typeof v === "number") {
-        cookies[k] = String(v);
-      }
-    }
-    if (!cookies.SESSDATA) {
-      setLoginMessage("Invalid file: missing SESSDATA", true);
-      return;
-    }
-    setCookies(cookies);
-    setLoginMessage("Cookies imported", false);
-  };
-  reader.onerror = () => setLoginMessage("Could not read the file", true);
-  reader.readAsText(file);
-}
-
-// Update the login status line with a transient message.
-function setLoginMessage(text, isError) {
-  loginStatus.textContent = text;
-  loginStatus.className = isError ? "status status-err" : "status status-ok";
-}
-
 function refreshLoginState() {
   const cookies = getCookies();
   if (cookies && cookies.SESSDATA) {

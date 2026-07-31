@@ -4,8 +4,13 @@
   "private": true,
   "description": "Extract playable stream URLs from Bilibili live rooms. Static frontend + Vercel serverless proxy.",
   "scripts": {
-    "dev": "vercel dev",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
     "deploy": "vercel deploy --prod"
+  },
+  "devDependencies": {
+    "vite": "^7.0.0"
   },
   "license": "MIT"
 }

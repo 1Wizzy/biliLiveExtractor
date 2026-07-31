@@ -11,6 +11,9 @@ node_modules/
 # Vercel
 .vercel
 
+# Vite build output
+dist/
+
 # Editor / OS
 .DS_Store
 .idea/
